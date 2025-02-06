@@ -9,13 +9,6 @@ import os
 
 # Configuração do layout da página
 st.set_page_config(page_title="RegulAI - Chatbot de Leis Municipais de Garanhuns", page_icon="📜", layout="centered")
-
-# Cria o túnel do ngrok se necessário (pode registrar no log)
-if os.environ.get("NGROK_KEY"):
-    public_url = ngrok.connect("http://localhost:8501", "http")
-    st.write(f"Túnel do Ngrok criado: {public_url}")
-    print(f"Túnel do ngrok ativo: {public_url}")
-
 st.title("📜 RegulAI - Chatbot de Leis Municipais de Garanhuns 🏛️")
 st.write("Pergunte sobre leis municipais e receba respostas baseadas nos textos legais!")
 
