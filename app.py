@@ -10,13 +10,16 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# Configuração do layout da página
+st.set_page_config(page_title="RegulAI - Chatbot de Leis Municipais de Garanhuns", page_icon="📜", layout="centered")
+
 # Cria o túnel do ngrok se necessário (pode registrar no log)
 if os.environ.get("NGROK_KEY"):
     public_url = ngrok.connect("http://localhost:8501", "http")
     st.write(f"Túnel do Ngrok criado: {public_url}")
     logger.info(f"Túnel do ngrok ativo: {public_url}")
 
-st.title("📜 RegulAI - Chatbot de Leis Municipais 🏛️")
+st.title("📜 RegulAI - Chatbot de Leis Municipais de Garanhuns 🏛️")
 st.write("Pergunte sobre leis municipais e receba respostas baseadas nos textos legais!")
 
 # Conectar ao MongoDB e carregar documentos
@@ -45,6 +48,8 @@ vector_store = create_vectorstore(split_docs, embeddings)
 # Configuração do LLM
 llm = init_llm()
 
+#Interface
+st.subheader("💬 Faça sua pergunta:")
 user_input = st.text_input("Digite sua pergunta:")
 if user_input:
     with st.spinner("Buscando resposta..."):
