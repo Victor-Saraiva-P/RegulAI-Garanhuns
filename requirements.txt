@@ -1,28 +1,10 @@
-# Framework para a interface web
 streamlit
-
-# Cliente para conexão com o MongoDB
 pymongo
-
-# Carregamento de variáveis de ambiente a partir de um arquivo .env
 python-dotenv
-
-# Biblioteca para criação de túneis (ngrok)
 pyngrok
-
-# Biblioteca principal do LangChain (versão mínima sugerida, ajuste conforme necessário)
 langchain>=0.0.155
-
-# Módulo para embeddings usando HuggingFace (para modelos de sentence transformers)
 sentence-transformers
-
-# Biblioteca para armazenamento vetorial FAISS (geralmente a versão CPU é suficiente)
 faiss-cpu
-
-# Se os módulos langchain_groq e langchain_huggingface estiverem disponíveis no PyPI:
 langchain_groq
 langchain_huggingface
-
-# Caso o pacote langchain_community.vectorstores faça parte de um repositório separado,
-# verifique a documentação para instalá-lo ou, se estiver incluído no pacote langchain, remova a linha abaixo.
 langchain_community
