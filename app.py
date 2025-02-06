@@ -6,9 +6,6 @@ from embeddings import create_embeddings, split_documents, create_vectorstore
 from llm import init_llm, rag_search
 from pyngrok import ngrok
 import os
-import logging
-
-logger = logging.getLogger(__name__)
 
 # Configuração do layout da página
 st.set_page_config(page_title="RegulAI - Chatbot de Leis Municipais de Garanhuns", page_icon="📜", layout="centered")
@@ -17,7 +14,7 @@ st.set_page_config(page_title="RegulAI - Chatbot de Leis Municipais de Garanhuns
 if os.environ.get("NGROK_KEY"):
     public_url = ngrok.connect("http://localhost:8501", "http")
     st.write(f"Túnel do Ngrok criado: {public_url}")
-    logger.info(f"Túnel do ngrok ativo: {public_url}")
+    print(f"Túnel do ngrok ativo: {public_url}")
 
 st.title("📜 RegulAI - Chatbot de Leis Municipais de Garanhuns 🏛️")
 st.write("Pergunte sobre leis municipais e receba respostas baseadas nos textos legais!")
@@ -28,9 +25,6 @@ test_doc = collection.find_one()
 if not test_doc:
     st.error("Nenhum documento encontrado no MongoDB! Verifique a conexão e os dados.")
     st.stop()
-# Aqui você pode optar por não exibir o documento de teste ao usuário,
-# apenas logar a informação:
-logger.info(f"Documento de teste encontrado: {test_doc}")
 
 raw_documents = load_documents(collection)
 if not raw_documents:
