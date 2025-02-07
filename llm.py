@@ -15,7 +15,12 @@ def rag_search(query: str, vector_store, llm):
     relevant_docs = vector_store.similarity_search(query, k=5)
     print(f"Documentos relevantes encontrados: {len(relevant_docs)}")
     for i, doc in enumerate(relevant_docs):
-        print(f"Documento {i+1} - Início do texto:\n{doc.page_content[:200]}...\n")
+        metadata = doc.metadata  # Obtendo os metadados do chunk
+        print(f"📜 **Documento {i+1}**")
+        print(f"   - 🏛 **Lei:** {metadata.get('numero_lei', 'Desconhecido')}/{metadata.get('ano_lei', 'Desconhecido')}")
+        print(f"   - 📖 **Ementa:** {metadata.get('ementa', 'Sem ementa')}")
+        print(f"   - 📄 **Trecho:** {doc.page_content[:200]}...\n")  # Mostrando só os primeiros 200 caracteres
+
 
     # Concatena os trechos para formar o contexto
     context = "\n".join([doc.page_content for doc in relevant_docs])
