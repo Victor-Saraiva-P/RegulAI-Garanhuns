@@ -14,6 +14,10 @@ llm = init_llm()
 
 # Perguntas de teste e respostas esperadas
 test_cases = [
+    {
+      "pergunta": "Quando é o dia do garçom?", 
+      "resposta_esperada": "Segundo a Lei Nº 5.305/2024, o DIA MUNICIPAL DO GARÇOM é comemorado anualmente na segunda segunda-feira do mês de agosto."
+    },
 ]
 
 # Inicializa o ROUGE Scorer
