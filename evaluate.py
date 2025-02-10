@@ -18,6 +18,14 @@ test_cases = [
       "pergunta": "Quando é o dia do garçom?", 
       "resposta_esperada": "Segundo a Lei Nº 5.305/2024, o DIA MUNICIPAL DO GARÇOM é comemorado anualmente na segunda segunda-feira do mês de agosto."
     },
+    {
+      "pergunta": "Qual é o conteúdo da Lei Nº 4647/2020 de Garanhuns?", 
+      "resposta_esperada": "A Lei Nº 4647/2020 do município de Garanhuns-PE denomina oficialmente de Rua Expedito Vieira de Lima o logradouro anteriormente conhecido como Rua Projetada 11. Essa rua está localizada entre as Quadras 16 e 17, 06 e 07, no Loteamento Eleonora Notaro, no Bairro Francisco Figueira."
+    },
+    {
+       "pergunta": "Qual é o conteúdo da Lei Nº 4140/2015 de Garanhuns?",
+       "resposta_esperada": "A Lei Nº 4140/2015 do município de Garanhuns-PE autoriza o Chefe do Poder Executivo a realizar a doação de um terreno público para a empresa José da Silva Santos Acessórios-ME, inscrita no CNPJ 24.555.120/0001-13."
+    }
 ]
 
 # Inicializa o ROUGE Scorer
