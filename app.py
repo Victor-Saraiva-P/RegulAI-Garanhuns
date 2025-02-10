@@ -3,8 +3,6 @@ from config import *
 from db import load_or_fetch_documents  
 from embeddings import create_embeddings, split_documents, create_or_load_vectorstore
 from llm import init_llm, rag_search
-from pyngrok import ngrok
-import os
 
 st.set_page_config(page_title="RegulAI - Chatbot de Leis Municipais de Garanhuns", page_icon="📜", layout="centered")
 st.title("📜 RegulAI - Chatbot de Leis Municipais de Garanhuns 🏛️")

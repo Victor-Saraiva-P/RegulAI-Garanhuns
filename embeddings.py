@@ -1,10 +1,18 @@
 import os
 import re
 import pickle
+from dotenv import load_dotenv
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.docstore.document import Document
+
+# Carrega as variáveis do arquivo .env
+load_dotenv()
+chunk_size = os.environ.get('CHUNK_SIZE')
+chunk_overlap = os.environ.get('CHUNK_OVERLAP')
+embeddingModel = os.environ.get('EMBEDDING_MODEL')
+
 
 # Criando diretório para cache
 CACHE_DIR = "cache"
@@ -41,7 +49,7 @@ def create_embeddings():
             embeddings = pickle.load(f)
     else:
         print("Gerando embeddings...")
-        embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+        embeddings = HuggingFaceEmbeddings(model_name=embeddingModel)
         with open(EMBEDDINGS_PATH, "wb") as f:
             pickle.dump(embeddings, f)
         print("Embeddings criados e salvos!")
@@ -62,7 +70,7 @@ def split_documents(raw_documents):
         for doc in raw_documents:
             metadata = extract_metadata(doc)  # Extraindo metadados
             
-            text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+            text_splitter = RecursiveCharacterTextSplitter(chunk_size, chunk_overlap)
             chunks = text_splitter.split_text(doc)
 
             for chunk in chunks:

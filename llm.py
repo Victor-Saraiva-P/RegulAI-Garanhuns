@@ -1,10 +1,16 @@
 # llm.py
+from dotenv import load_dotenv
 import streamlit as st
 from langchain_groq import ChatGroq
+import os
+
+# Carrega as variáveis do arquivo .env
+load_dotenv()
+groqModel = os.environ.get('GROQ_MODEL')
 
 def init_llm():
     print("Configurando LLM Groq...\n")
-    llm = ChatGroq(model="llama3-8b-8192")
+    llm = ChatGroq(model=groqModel)
     print("LLM configurado!")
     return llm
 
