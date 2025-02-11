@@ -51,16 +51,28 @@ def rag_search(query: str, vector_store, llm):
 
     context = "\n".join([doc.page_content for doc in relevant_docs])
     prompt = (
-        f"Baseando-se no texto das leis a seguir, responda com precisão:\n\n"
-        f"{context}\n\nPergunta: {query}\nResposta:"
-    )
+        f"Você é um especialista jurídico encarregado de interpretar leis municipais de Garanhuns. "
+        f"Seu objetivo é fornecer respostas claras, precisas e diretas para perguntas sobre cada lei. "
+        f"Sempre baseie suas respostas exclusivamente no texto da lei fornecida, sem suposições externas. "
+        f"Se uma pergunta mencionar um número de lei, verifique se ele está presente no texto antes de responder. "
+        f"\n\nRegras para resposta:"
+        f"\n- Se houver uma data mencionada, forneça exatamente essa data sem alterar o formato."
+        f"\n- Se houver um nome próprio, transcreva-o exatamente como aparece no texto da lei."
+        f"\n- Se houver um valor financeiro, forneça exatamente o valor sem reescrevê-lo ou arredondá-lo."
+        f"\n- Se a informação não estiver no texto, responda explicitamente que o dado não foi encontrado."
+        f"\n- Mantenha a resposta objetiva e sem repetições desnecessárias."
+        f"\n\n{context}\n\nPergunta: {query}\nResposta:"
+)
+
 
     try:
         print("Enviando prompt para LLM...")
-        response = llm.invoke(prompt)
+        response_ai_message = llm.invoke(prompt)  # retorna AIMessage
+        response_text = response_ai_message.content  # converte para string
         print("Resposta gerada!")
     except Exception as e:
-        response = f"Erro ao invocar LLM: {e}"
+        response_text = f"Erro ao invocar LLM: {e}"
 
-    return response
+    return response_text  # agora sai como 'str'
+
 
