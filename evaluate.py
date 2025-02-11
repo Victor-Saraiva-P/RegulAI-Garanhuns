@@ -15,17 +15,17 @@ llm = init_llm()
 # Perguntas de teste e respostas esperadas
 test_cases = [
     {
-      "pergunta": "Quando é o dia do garçom?", 
-      "resposta_esperada": "Segundo a Lei Nº 5.305/2024, o DIA MUNICIPAL DO GARÇOM é comemorado anualmente na segunda segunda-feira do mês de agosto."
+        "pergunta": "O que estabelece a Lei Nº 5.272/2024?",
+        "resposta_esperada": "A Lei Nº 5.272/2024 institui a Política de Conscientização e Incentivo à Doação de Sangue, Órgãos, Tecidos e Leite Materno, chamada Promoção 3D.",
     },
     {
-      "pergunta": "Qual é o conteúdo da Lei Nº 4647/2020 de Garanhuns?", 
-      "resposta_esperada": "A Lei Nº 4647/2020 do município de Garanhuns-PE denomina oficialmente de Rua Expedito Vieira de Lima o logradouro anteriormente conhecido como Rua Projetada 11. Essa rua está localizada entre as Quadras 16 e 17, 06 e 07, no Loteamento Eleonora Notaro, no Bairro Francisco Figueira."
+        "pergunta": "Qual o critério de prioridade para matrícula escolar?",
+        "resposta_esperada": "A Lei Nº 5.209/2024 assegura prioridade de matrícula em escolas municipais para crianças e adolescentes cujos pais ou responsáveis sejam idosos ou pessoas com deficiência.",
     },
     {
-       "pergunta": "Qual é o conteúdo da Lei Nº 4140/2015 de Garanhuns?",
-       "resposta_esperada": "A Lei Nº 4140/2015 do município de Garanhuns-PE autoriza o Chefe do Poder Executivo a realizar a doação de um terreno público para a empresa José da Silva Santos Acessórios-ME, inscrita no CNPJ 24.555.120/0001-13."
-    }
+        "pergunta": "Existe alguma lei que regulamenta o uso de identificação em equídeos de carga em Garanhuns?",
+        "resposta_esperada": "Sim, a Lei Nº 5.258/2024 institui a obrigatoriedade do uso de cabresto com identificação de nome, telefone e CPF para animais equídeos de carga no município de Garanhuns.",
+    },
 ]
 
 # Inicializa o ROUGE Scorer
@@ -39,7 +39,7 @@ for case in test_cases:
     resposta_esperada = case["resposta_esperada"]
     
     # Obtém a resposta do RAG
-    resposta_gerada = rag_search(pergunta, vector_store, llm).content
+    resposta_gerada = rag_search(pergunta, vector_store, llm)
 
     # Calcula ROUGE Score
     scores = scorer.score(resposta_esperada, resposta_gerada)
