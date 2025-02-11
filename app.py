@@ -30,5 +30,5 @@ user_input = st.text_input("Digite sua pergunta:")
 if user_input:
     with st.spinner("Buscando resposta..."):
         response = rag_search(user_input, vector_store, llm)
-        content = response.content
+        content = response
         st.text_area("Resposta:", content, height=200)
