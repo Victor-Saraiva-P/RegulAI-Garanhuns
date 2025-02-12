@@ -1,18 +1,26 @@
 import json
 from rouge_score import rouge_scorer
-from config import *  
-from db import load_or_fetch_documents  
+from config import *
+from db import load_or_fetch_documents
 from embeddings import create_embeddings, split_documents, create_or_load_vectorstore
 from llm import init_llm, rag_search
 
-# Inicializa o sistema RAG
+"""
+Script simples de avaliação:
+1) Carrega o pipeline RAG (documentos, embeddings, índice FAISS, LLM).
+2) Executa perguntas definidas em test_cases.
+3) Compara as respostas obtidas com as esperadas via ROUGE.
+4) Salva os resultados em evaluation_results.json.
+"""
+
+# Inicializa todo o pipeline RAG
 raw_documents = load_or_fetch_documents()
 embeddings = create_embeddings()
 split_docs = split_documents(raw_documents)
 vector_store = create_or_load_vectorstore(split_docs, embeddings)
 llm = init_llm()
 
-# Perguntas de teste e respostas esperadas
+# Casos de teste manuais (pergunta e resposta esperada)
 test_cases = [
     {
         "pergunta": "Quando é o dia do garçom?", 
@@ -54,30 +62,43 @@ test_cases = [
 
 # Inicializa o ROUGE Scorer
 scorer = rouge_scorer.RougeScorer(['rouge1', 'rougeL'], use_stemmer=True)
-
 results = []
+total_rouge1 = 0
+total_rougeL = 0
 
-# Testa cada pergunta
+# Avalia cada caso de teste
 for case in test_cases:
     pergunta = case["pergunta"]
     resposta_esperada = case["resposta_esperada"]
     
-    # Obtém a resposta do RAG
+    # Obtém a resposta do sistema RAG
     resposta_gerada = rag_search(pergunta, vector_store, llm)
 
-    # Calcula ROUGE Score
+    # Calcula métricas ROUGE
     scores = scorer.score(resposta_esperada, resposta_gerada)
 
-    # Salva os resultados
+    rouge1_score = scores["rouge1"].fmeasure
+    rougeL_score = scores["rougeL"].fmeasure
+
+    # Atualiza soma dos scores
+    total_rouge1 += rouge1_score
+    total_rougeL += rougeL_score
+
+    # Armazena resultados de cada pergunta
     results.append({
         "pergunta": pergunta,
         "resposta_esperada": resposta_esperada,
         "resposta_gerada": resposta_gerada,
-        "rouge1": scores["rouge1"].fmeasure,
-        "rougeL": scores["rougeL"].fmeasure
+        "rouge1": rouge1_score,
+        "rougeL": rougeL_score
     })
 
-# Salva os resultados em um JSON para análise posterior
+# Calcula médias
+num_test_cases = len(test_cases)
+average_rouge1 = total_rouge1 / num_test_cases
+average_rougeL = total_rougeL / num_test_cases
+
+# Salva resultados em JSON para análise posterior
 with open("evaluation_results.json", "w") as f:
     json.dump(results, f, indent=4)
 
@@ -87,3 +108,8 @@ for r in results:
     print(f"✅ Esperada: {r['resposta_esperada']}")
     print(f"🤖 Gerada: {r['resposta_gerada']}")
     print(f"📊 ROUGE-1: {r['rouge1']:.4f}, ROUGE-L: {r['rougeL']:.4f}")
+
+# Exibe médias dos scores ROUGE
+print("\n📈 MÉDIA DAS MÉTRICAS ROUGE 📈")
+print(f"ROUGE-1 médio: {average_rouge1:.4f}")
+print(f"ROUGE-L médio: {average_rougeL:.4f}")
