@@ -61,6 +61,7 @@ def rag_search(query: str, vector_store, llm):
         f"\n- Se houver um valor financeiro, forneça exatamente o valor sem reescrevê-lo ou arredondá-lo."
         f"\n- Se a informação não estiver no texto, responda explicitamente que o dado não foi encontrado."
         f"\n- Mantenha a resposta objetiva e sem repetições desnecessárias."
+        f"\n- Se a pergunta tiver um formato Existe alguma lei? Sempre cite a lei."
         f"\n\n{context}\n\nPergunta: {query}\nResposta:"
 )
 
