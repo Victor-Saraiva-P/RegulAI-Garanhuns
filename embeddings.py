@@ -1,5 +1,13 @@
+import nltk
+nltk.download('stopwords', quiet=True)
+nltk.download('punkt', quiet=True)
+nltk.download('rslp', quiet=True)
+
+
 import os
 import pickle
+import unicodedata
+import nltk
 from dotenv import load_dotenv
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
@@ -8,10 +16,19 @@ from langchain.docstore.document import Document
 
 load_dotenv()
 
+# Certifica-se de que os recursos do NLTK estão disponíveis (caso use stopwords ou tokenização)
+nltk.download('stopwords', quiet=True)
+nltk.download('punkt', quiet=True)
+
 # Carrega parâmetros de chunk e modelo de embeddings do .env
 chunk_size = int(os.environ.get('CHUNK_SIZE', 1000))
 chunk_overlap = int(os.environ.get('CHUNK_OVERLAP', 100))
 embeddingModel = os.environ.get('EMBEDDING_MODEL')
+
+# Flags de pré-processamento definidas no .env (true/false)
+ENABLE_NORMALIZATION = os.environ.get('ENABLE_NORMALIZATION', 'false').lower() == 'true'
+ENABLE_STOPWORDS = os.environ.get('ENABLE_STOPWORDS', 'false').lower() == 'true'
+ENABLE_STEMMING = os.environ.get('ENABLE_STEMMING', 'false').lower() == 'true'
 
 # Diretórios e caminhos de cache
 CACHE_DIR = "cache"
@@ -20,6 +37,38 @@ os.makedirs(CACHE_DIR, exist_ok=True)
 EMBEDDINGS_PATH = os.path.join(CACHE_DIR, "cached_embeddings.pkl")
 SPLIT_DOCS_PATH = os.path.join(CACHE_DIR, "cached_split_docs.pkl")
 FAISS_INDEX_PATH = os.path.join(CACHE_DIR, "faiss_index")
+
+def preprocess_text(text: str) -> str:
+    """
+    Aplica pré-processamentos opcionais ao texto, conforme flags definidas no .env.
+    - Normalização: converte para minúsculas e remove acentuação.
+    - Remoção de stopwords: remove palavras irrelevantes (usando stopwords em português).
+    - Stemming: reduz palavras às suas raízes (usando RSLPStemmer para português).
+    """
+    # Normalização: lower-case e remoção de acentos
+    if ENABLE_NORMALIZATION:
+        text = text.lower()
+        text = unicodedata.normalize('NFKD', text)
+        text = ''.join([c for c in text if not unicodedata.combining(c)])
+    
+    # Se for para remover stopwords ou aplicar stemming, tokenize o texto
+    if ENABLE_STOPWORDS or ENABLE_STEMMING:
+        from nltk.tokenize import word_tokenize
+        tokens = word_tokenize(text, language='portuguese')
+        
+        if ENABLE_STOPWORDS:
+            from nltk.corpus import stopwords
+            stop_words = set(stopwords.words('portuguese'))
+            tokens = [word for word in tokens if word not in stop_words]
+        
+        if ENABLE_STEMMING:
+            from nltk.stem import RSLPStemmer  # Para português
+            stemmer = RSLPStemmer()
+            tokens = [stemmer.stem(word) for word in tokens]
+        
+        text = " ".join(tokens)
+    
+    return text
 
 def create_embeddings():
     """
@@ -40,7 +89,7 @@ def create_embeddings():
 
 def split_documents(raw_documents):
     """
-    Recebe a lista de documentos brutos e os divide em chunks
+    Recebe a lista de documentos brutos, aplica pré-processamento (se ativado) e os divide em chunks
     utilizando RecursiveCharacterTextSplitter.
     Cada chunk recebe metadados com o número da lei.
     Retorna a lista de documentos fragmentados (split_docs).
@@ -60,9 +109,13 @@ def split_documents(raw_documents):
 
     for item in raw_documents:
         texto_lei = item["texto_lei"]
-        numero_lei = item["numero_lei"]  # não vazio
-
-        chunks = text_splitter.split_text(texto_lei)
+        numero_lei = item["numero_lei"]  # valor não vazio
+        
+        # Aplica pré-processamento conforme as flags definidas
+        texto_lei_preprocessado = preprocess_text(texto_lei)
+        
+        # Divide o texto pré-processado em chunks
+        chunks = text_splitter.split_text(texto_lei_preprocessado)
         for chunk in chunks:
             doc = Document(
                 page_content=chunk,
