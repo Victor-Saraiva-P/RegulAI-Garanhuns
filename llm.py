@@ -1,5 +1,6 @@
 import os
 import re
+import time
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 
@@ -22,8 +23,10 @@ def rag_search(query: str, vector_store, llm):
       - busca exata por número de lei, se presente na query;
       - caso contrário, busca vetorial no FAISS.
     Em seguida, constrói um prompt com contexto e invoca a LLM.
-    Retorna o texto de resposta gerado.
+    Retorna o texto de resposta gerado e imprime o tempo de execução.
     """
+    start_time = time.time()  # Inicia a medição do tempo
+
     # Regex para identificar número de lei no formato 'X.XXX/AAAA' ou 'XXXX/AAAA'
     lei_match = re.search(r"\b(\d{1,5}(?:\.\d{1,5})?/\d{4})\b", query)
     if lei_match:
@@ -80,5 +83,8 @@ def rag_search(query: str, vector_store, llm):
     except Exception as e:
         response_text = f"Erro ao invocar LLM: {e}"
 
-    return response_text
+    end_time = time.time()  # Finaliza a medição do tempo
+    elapsed_time = end_time - start_time
+    print(f"RAG search demorou {elapsed_time:.2f} segundos.")
 
+    return response_text
